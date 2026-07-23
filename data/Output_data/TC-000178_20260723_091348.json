@@ -1,0 +1,19 @@
+{
+  "customer_id": "TC-000178",
+  "churn_probability": 0.0,
+  "risk_tier": "low",
+  "predicted_label": 0,
+  "top_risk_factors": {
+    "for_churn": [
+      "contract type=Month-to-month (churn rate 48.9%, higher than baseline 36.5%)",
+      "satisfaction score=3.1 (bin (-0.001, 4.1]) (churn rate 44.3%, higher than baseline 36.5%)",
+      "tenure months=3.648678715 (bin (0.999, 4.545]) (churn rate 42.7%, higher than baseline 36.5%)"
+    ],
+    "for_not_churn": [
+      "avg monthly minutes=517.2 (bin (413.283, 747.5]) (churn rate 35.4%, lower than baseline 36.5%)",
+      "num additional services=0 (bin (-0.001, 1.0]) (churn rate 36.1%, lower than baseline 36.5%)",
+      "monthly charges=24.81 (bin (-0.001, 40.54]) (churn rate 36.2%, lower than baseline 36.5%)"
+    ]
+  },
+  "generated_at": "2026-07-23T03:43:48Z"
+}

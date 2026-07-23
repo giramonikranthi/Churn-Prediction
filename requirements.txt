@@ -1,0 +1,15 @@
+numpy==2.5.1
+pandas==2.3.3
+matplotlib==3.11.1
+seaborn==0.13.0
+plotly==6.9.0
+scipy==1.18.0
+scikit-learn==1.9.0
+xgboost==3.3.0
+optuna==4.9.0
+nbformat>=4.2.0
+imblearn==0.0
+mlflow==3.14.0
+streamlit==1.60.0
+openpyxl==3.1.5
+ipykernel>=6.29.0

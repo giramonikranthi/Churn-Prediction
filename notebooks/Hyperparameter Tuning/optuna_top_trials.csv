@@ -1,0 +1,11 @@
+number,value,params_n_estimators,params_max_depth,params_min_samples_split,params_min_samples_leaf,params_max_features
+8,0.681,187,6,20,8,sqrt
+26,0.681,259,6,19,10,sqrt
+25,0.68,253,6,19,10,sqrt
+21,0.679,257,7,18,9,sqrt
+3,0.678,158,8,13,2,log2
+16,0.677,233,7,17,9,sqrt
+5,0.676,202,6,3,10,sqrt
+29,0.676,186,6,16,7,sqrt
+13,0.675,239,8,17,4,sqrt
+23,0.674,271,8,15,9,sqrt
