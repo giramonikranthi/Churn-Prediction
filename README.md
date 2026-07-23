@@ -126,6 +126,12 @@ mlflow runs list --experiment-id 1
 ```
 ## 7) Images
 
+### Streamlit App Output
+
+Live app: https://churn-prediction-koa9fbmuzetbwk3pgxze6s.streamlit.app/
+
+![Dashboard Output](data/images/Dashboard_output.JPG)
+
 ![MLflow Run Details](data/images/mlflow_run_details.JPG)
 
 ![MLflow Metrics](data/images/mlflow_metrics.JPG)
