@@ -124,9 +124,15 @@ With `.venv` active:
 mlflow experiments list
 mlflow runs list --experiment-id 1
 ```
+## 7) Images
 
-## 7) Notes
+![MLflow Run Details](data/images/mlflow_run_details.JPG)
+
+![MLflow Metrics](data/images/mlflow_metrics.JPG)
+
+![MLflow Accuracy Comparison](data/images/mlflow_accuracy_comparison.JPG)
+
+## 8) Notes
 
 - This project currently imports `src.predictor` in `app.py` and `src/verify_prediction.py`.
 - Ensure that module exists in your working copy when running prediction flow.
-
