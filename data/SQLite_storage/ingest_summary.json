@@ -1,0 +1,19 @@
+{
+  "db_path": "D:\\Churn_Prediction\\data\\SQLite_storage\\retention_sessions.db",
+  "input_dir": "D:\\Churn_Prediction\\data\\Val_data",
+  "files_found": 1,
+  "files_processed": 1,
+  "files_skipped_unchanged": 0,
+  "rows_total": 22,
+  "inserted_total": 21,
+  "updated_total": 1,
+  "results": [
+    {
+      "file": "D:\\Churn_Prediction\\data\\Val_data\\churn_data_v1_20260721_161051.json",
+      "status": "ok",
+      "rows": 22,
+      "inserted": 21,
+      "updated": 1
+    }
+  ]
+}

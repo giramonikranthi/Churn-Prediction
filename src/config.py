@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 
 APP_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = APP_DIR / "data" / "Input_data"
+DATA_DIR = APP_DIR / "data" / "Val_data"
 DATA_FILE_PATTERN = ["*.csv", "*.xlsx", "*.json"]
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 MLFLOW_RUN_ID = "7e793e3e2f1d4b798a9b90151cc9c8fb"

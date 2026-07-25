@@ -10,6 +10,13 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+try:
+    from pydantic import BaseModel, ConfigDict, Field
+except ImportError:  # pragma: no cover - compatibility for older Pydantic versions
+    from pydantic import BaseModel, Field
+
+    ConfigDict = None
+
 from src.config import OUTPUT_DIR
 
 
@@ -23,6 +30,36 @@ NON_FEATURE_COLUMNS = [
 ]
 
 TARGET_COLUMN_ALIASES = ["churned", "churn", "target", "label"]
+
+
+class TopRiskFactors(BaseModel):
+    """Structured schema for the explanation factors attached to a prediction."""
+
+    if ConfigDict is not None:
+        model_config = ConfigDict(extra="forbid")
+    else:
+        class Config:  # type: ignore[no-redef]
+            extra = "forbid"
+
+    for_churn: list[str] = Field(default_factory=list)
+    for_not_churn: list[str] = Field(default_factory=list)
+
+
+class ChurnPredictionOutput(BaseModel):
+    """Structured schema for the churn prediction output sent to downstream consumers."""
+
+    if ConfigDict is not None:
+        model_config = ConfigDict(extra="forbid")
+    else:
+        class Config:  # type: ignore[no-redef]
+            extra = "forbid"
+
+    customer_id: str = Field(min_length=1)
+    churn_probability: float = Field(ge=0.0, le=1.0)
+    risk_tier: str = Field(pattern="^(low|medium|high)$")
+    predicted_label: int = Field(ge=0, le=1)
+    top_risk_factors: TopRiskFactors
+    generated_at: str
 
 
 def _to_serializable(value: Any) -> Any:
@@ -417,6 +454,14 @@ def _summarize_risk_factors(customer_input: dict[str, Any]) -> dict[str, list[st
     return {"for_churn": churn_text, "for_not_churn": retain_text}
 
 
+def _build_prediction_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Validate and normalize the structured prediction payload via Pydantic."""
+    validated = ChurnPredictionOutput(**payload)
+    if hasattr(validated, "model_dump"):
+        return validated.model_dump(mode="json")
+    return validated.dict()
+
+
 def predict_churn(
     customer_input: dict[str, Any],
     model: Any,
@@ -459,7 +504,7 @@ def predict_churn(
     customer_id = str(input_row.get("customer_id", "UNKNOWN"))
     factors = _summarize_risk_factors(input_row)
 
-    return {
+    payload = {
         "customer_id": customer_id,
         "churn_probability": round(float(probability), 6),
         "risk_tier": risk_tier,
@@ -467,6 +512,7 @@ def predict_churn(
         "top_risk_factors": factors,
         "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
     }
+    return _build_prediction_payload(payload)
 
 
 def save_prediction_json(prediction: dict[str, Any], customer_id: str) -> Path:
@@ -478,9 +524,10 @@ def save_prediction_json(prediction: dict[str, Any], customer_id: str) -> Path:
     file_name = f"{safe_customer_id}_{timestamp}.json"
     output_path = OUTPUT_DIR / file_name
 
+    validated_prediction = _build_prediction_payload(prediction)
     serializable_payload = {
         key: _to_serializable(value) if not isinstance(value, dict) else value
-        for key, value in prediction.items()
+        for key, value in validated_prediction.items()
     }
 
     with output_path.open("w", encoding="utf-8") as fh:

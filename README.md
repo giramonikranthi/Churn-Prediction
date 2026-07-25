@@ -1,144 +1,508 @@
-# Churn Prediction App (Streamlit + MLflow)
+# 📞 TeleConnect Retention Assistant
 
-This project is a customer churn prediction application with:
+An AI-powered customer retention assistant that helps customer service representatives identify churn risk, recommend personalized retention strategies, and manage customer interactions through a deterministic workflow with optional LLM-powered response polishing.
 
-- A Streamlit UI for loading local customer files and running churn predictions.
-- MLflow model loading from a tracking server and local artifacts.
-- JSON prediction output saved for each customer run.
+Built with **Streamlit**, **Machine Learning**, **MLflow**, **SQLite**, and **Groq LLMs**, the application combines explainable business logic with natural-language interaction to provide consistent, auditable customer support.
 
-## 1) Project Layout
+---
 
-```text
-Churn_Prediction/
-├─ .devcontainer/
-├─ .venv/
-├─ .gitignore
-├─ app.py
-├─ requirements.txt
-├─ mlflow.db
-├─ README.md
-├─ data/
-│  ├─ images/
-│  ├─ Input_data/
-│  │  └─ churn_data_v1.json
-│  ├─ metrics_and_params/
-│  │  └─ trials.csv
-│  ├─ Output_data/
-│  │  └─ *.json
-│  ├─ Pre_processed_data/
-│  │  └─ churn_data_v1_20260721_161051.csv
-│  ├─ raw_data/
-│  │  └─ test_datafile.csv
-│  └─ SQLite_storage/
-├─ logs/
-├─ mlartifacts/
-├─ mlruns/
-├─ notebooks/
-│  ├─ Data_Analysis/
-│  │  └─ churn_data_cleaning.ipynb
-│  ├─ EDA/
-│  │  └─ churn_data_EDA.ipynb
-│  ├─ Hyperparameter Tuning/
-│  │  └─ Training_HyperparameterTune.ipynb
-│  └─ Model_Training/
-│     ├─ churn_pred_ml_flow.ipynb
-│     └─ churn_pred_tunning.ipynb
-└─ src/
-   ├─ __init__.py
-   ├─ config.py
-   ├─ data_loader.py
-   ├─ logger_utils.py
-   ├─ model_loader.py
-   ├─ predictor.py
-   └─ verify_prediction.py
+## ✨ Features
+
+- 🔍 Customer profile lookup
+- 🗄 Customer lookup uses SQLite first with JSON fallback
+- 📉 Machine Learning-based churn prediction
+- 🎁 Personalized retention offer recommendations
+- 🚨 Automatic supervisor escalation based on business guardrails
+- 🤖 Optional LLM polishing for professional responses
+- 📋 Session-level audit logging (JSONL & Text)
+- 🗄 SQLite-backed session monitoring dashboard
+- 📊 MLflow model loading and version management
+- 🛡 Input and output guardrails
+- 💬 Streamlit chat interface
+
+---
+
+# 🏗 Architecture
+
+The application follows a **deterministic orchestration model**.
+
+Business decisions are **never delegated to the LLM**.
+
+Instead,
+
+- Customer lookup
+- Churn prediction
+- Offer selection
+- Escalation
+- Interaction logging
+
+are performed through deterministic tools.
+
+The LLM is only responsible for improving the tone and readability of the final response.
+
+---
+
+## Architecture Flow
+
+```mermaid
+flowchart TD
+   A[Retention Representative] --> B[Streamlit Chat UI]
+
+   B --> C[Orchestrator]
+
+   C --> D{Customer ID Found?}
+
+   D -- No --> E[Request Clarification]
+
+   D -- Yes --> F[Lookup Customer]
+
+   F --> G{Customer Exists?}
+
+   G -- No --> H[Log Interaction]
+
+   G -- Yes --> I{Escalation Required?}
+
+   I -- Yes --> J[Escalate to Supervisor]
+
+   J --> K[Log Escalation]
+
+   K --> L[Generate Summary]
+
+   I -- No --> M[Predict Churn]
+
+   M --> N[Generate Retention Offers]
+
+   N --> O[Log Interaction]
+
+   O --> P[Generate Summary]
+
+   L --> Q[LLM Response Polish]
+
+   P --> Q
+
+   Q --> R[Output Guardrails]
+
+   R --> S[Return Response]
+
+   C --> T[Session Logger]
+
+   T --> U[SQLite Session Store]
 ```
 
-## 2) Python Environment (.venv)
+---
 
-This repository already includes a local virtual environment in `.venv`.
+# 🔄 End-to-End Workflow
 
-### PowerShell (Windows)
+```
+Representative Message
+        │
+        ▼
+Input Guardrails
+        │
+        ▼
+Customer Lookup
+        │
+        ▼
+Escalation Decision
+        │
+        ├──────────────► Escalation Workflow
+        │
+        ▼
+Churn Prediction
+        │
+        ▼
+Retention Offer Generation
+        │
+        ▼
+Interaction Logging
+        │
+        ▼
+LLM Response Polishing
+        │
+        ▼
+Output Guardrails
+        │
+        ▼
+Streamlit Chat Interface
+```
+
+---
+
+# 🛠 Tech Stack
+
+| Layer | Technology |
+|--------|------------|
+| Frontend | Streamlit |
+| Language | Python |
+| Machine Learning | Scikit-Learn |
+| Model Registry | MLflow |
+| Database | SQLite |
+| LLM | Groq API |
+| Logging | JSONL + Text Logs |
+| Environment | python-dotenv |
+| Data Processing | Pandas, NumPy |
+
+---
+
+# 📂 Project Structure
+
+```
+Churn_Prediction/
+
+├── app.py
+├── requirements.txt
+├── README.md
+├── .env
+│
+├── data/
+│   ├── Val_data/
+│   ├── Output_data/
+│   ├── SQLite_storage/
+│   └── images/
+│
+├── logs/
+├── mlruns/
+├── mlartifacts/
+│
+├── prompts/
+│   └── retention_polish_system_prompt.md
+│
+├── notebooks/
+│
+├── SQLlite_sync/
+│
+└── src/
+    ├── predictor.py
+    ├── model_loader.py
+    ├── session_store.py
+    │
+    ├── retention_agent/
+    │   ├── orchestrator.py
+    │   ├── messaging.py
+    │   ├── runtime.py
+    │   ├── guardrails.py
+    │   ├── prediction_engine.py
+    │   ├── chat_panel.py
+    │   └── ...
+    │
+    └── tools/
+        ├── customer_tools.py
+        ├── offer_tools.py
+        ├── engagement_tools.py
+        └── dispatch.py
+```
+
+---
+
+# ⚙️ Core Components
+
+### Streamlit UI
+
+- Chat interface
+- Session monitoring sidebar
+- Customer profile panel
+- Prediction panel
+
+---
+
+### Orchestrator
+
+Coordinates the complete deterministic workflow.
+
+Responsibilities include:
+
+- Guardrail validation
+- Customer lookup
+- Escalation routing
+- Churn prediction
+- Offer generation
+- Interaction logging
+- LLM response polishing
+
+---
+
+### Customer Data Source Strategy
+
+`lookup_customer` uses a deterministic source priority for validation/customer data:
+
+1. **Primary**: SQLite table `customer_validation_data` in `data/SQLite_storage/retention_sessions.db`
+2. **Fallback**: JSON files in `data/Val_data`
+
+This means customer lookup remains available even if SQLite is temporarily unavailable.
+
+The `lookup_customer` response now includes:
+
+- `source`: `sqlite` or `json_fallback`
+- `source_path`: the configured validation data directory path
+
+---
+
+### Prediction Engine
+
+Responsible for
+
+- loading MLflow models
+- preprocessing customer features
+- predicting churn probability
+- validating prediction outputs
+
+---
+
+### Messaging Engine
+
+Generates structured customer summaries and optionally enhances them using the configured Groq LLM while preserving deterministic business decisions.
+
+---
+
+### Runtime Logger
+
+Creates
+
+- JSONL audit logs
+- Plain text logs
+- Session events
+- SQLite monitoring records
+
+---
+
+# 🚀 Getting Started
+
+## Clone Repository
 
 ```powershell
-cd D:\Churn_Prediction
+git clone <repository-url>
+
+cd Churn_Prediction
+```
+
+---
+
+## Create Virtual Environment
+
+```powershell
+python -m venv .venv
+
 .\.venv\Scripts\Activate.ps1
 ```
 
-If script execution is blocked:
+---
+
+## Install Dependencies
 
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
+pip install --upgrade pip
 
-### Install/refresh dependencies
-
-```powershell
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 3) Run the App
+If PowerShell blocks activation:
 
-After activating `.venv`:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+---
+
+# 🔑 Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+GROQ_API_KEY=your_api_key
+
+GROQ_MODEL_PREDICT=model_name
+
+GROQ_MODEL_JUDGE=model_name
+
+MLFLOW_TRACKING_URI=http://localhost:5000
+
+MLFLOW_MODEL_URI=runs:/<run_id>/model
+```
+
+---
+
+# ▶ Running the Application
 
 ```powershell
 streamlit run app.py
 ```
 
-Then open the local URL shown by Streamlit (usually `http://localhost:8501`).
+Open
 
-## 4) Data Input and Prediction Output
-
-- Input files are loaded from: `data/Input_data`
-- Supported input types: `.csv`, `.xlsx`, `.json`
-- Output prediction JSON files are written to: `data/Output_data`
-- Application log file: `logs/app.log`
-
-## 5) MLflow Access
-
-The app reads MLflow settings from `src/config.py`:
-
-- `MLFLOW_TRACKING_URI = "http://localhost:5000"`
-- `MLFLOW_RUN_ID = "7e793e3e2f1d4b798a9b90151cc9c8fb"`
-- `MODEL_NAME = "XGBClassifier With SMOTE"`
-- `MLFLOW_MODEL_URI = "runs:/7e793e3e2f1d4b798a9b90151cc9c8fb/model"`
-
-### Start MLflow UI from this project
-
-```powershell
-cd D:\Churn_Prediction
-.\.venv\Scripts\mlflow.exe ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts --host 0.0.0.0 --port 5000
+```
+http://localhost:8501
 ```
 
-Open: `http://localhost:5000`
+---
 
-### Model loading behavior in app
+# 📊 MLflow
 
-`src/model_loader.py` tries model URIs in order (registry aliases/version, run URI), then falls back to loading local artifact paths if needed.
+The application supports both
 
-## 6) Useful MLflow Commands
+- Local artifacts
+- Remote MLflow tracking servers
 
-With `.venv` active:
+Model loading strategy
+
+1. Local MLflow artifacts
+2. Remote tracking server
+3. Registry validation
+
+Launch MLflow UI
 
 ```powershell
-mlflow experiments list
-mlflow runs list --experiment-id 1
+mlflow ui `
+--backend-store-uri sqlite:///mlflow.db `
+--default-artifact-root ./mlartifacts `
+--host 0.0.0.0 `
+--port 5000
 ```
-## 7) Images
 
-### Streamlit App Output
+---
 
-Live app: https://churn-prediction-koa9fbmuzetbwk3pgxze6s.streamlit.app/
+# 🗄 SQLite Session Monitoring
 
-![Dashboard Output](data/images/Dashboard_output.JPG)
+Every conversation is stored inside SQLite.
 
-![MLflow Run Details](data/images/mlflow_run_details.JPG)
+Tracked information includes
 
-![MLflow Metrics](data/images/mlflow_metrics.JPG)
+- Session ID
+- Customer lookup
+- Prediction events
+- Offers generated
+- Escalation events
+- Final responses
+- Runtime metrics
 
-![MLflow Accuracy Comparison](data/images/mlflow_accuracy_comparison.JPG)
+Database location
 
-## 8) Notes
+```
+data/SQLite_storage/retention_sessions.db
+```
 
-- This project currently imports `src.predictor` in `app.py` and `src/verify_prediction.py`.
-- Ensure that module exists in your working copy when running prediction flow.
+---
+
+# 📝 Audit Logging
+
+Each session automatically generates
+
+```
+logs/
+
+├── session_id.jsonl
+└── session_id.log
+```
+
+Interaction records are also stored as
+
+```
+data/Output_data/
+
+session_interactions.jsonl
+
+session_escalations.jsonl
+```
+
+This provides complete traceability of every customer interaction.
+
+---
+
+# 💬 Example Conversation
+
+**Representative**
+
+```
+Customer TC-000171 wants to cancel due to high pricing.
+```
+
+**Assistant**
+
+```
+Customer Found ✔
+
+Churn Risk
+High (89%)
+
+Recommended Offers
+
+• 20% Loyalty Discount
+• Premium Plan Free Trial
+
+Suggested Action
+
+Offer the loyalty discount first.
+
+Escalation
+
+Not Required
+```
+
+---
+
+# 📸 Screenshots
+
+Add screenshots here.
+
+```
+docs/
+
+├── dashboard.png
+
+├── chat.png
+
+├── prediction.png
+
+└── session_monitor.png
+```
+
+Example
+
+```markdown
+![Chat](docs/chat.png)
+
+![Prediction](docs/prediction.png)
+
+![Session Monitor](docs/session_monitor.png)
+```
+
+---
+
+# 🔮 Future Enhancements
+
+- Authentication and role-based access
+- CRM integration
+- Multi-agent orchestration
+- Docker deployment
+- Kubernetes support
+- Real-time analytics dashboard
+- Model performance monitoring
+- Vector search for customer interaction history
+
+---
+
+# 🧪 Development
+
+The repository also contains notebooks for
+
+- Data Cleaning
+- Exploratory Data Analysis
+- Feature Engineering
+- Hyperparameter Tuning
+- Model Training
+- SQLite Exploration
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
+
+**Your Name**
+
+GitHub: https://github.com/yourusername
+
+LinkedIn: https://linkedin.com/in/yourprofile
