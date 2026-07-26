@@ -335,6 +335,69 @@ http://localhost:8501
 
 ---
 
+# 🧪 Evaluation: LLM-as-a-Judge and Test Cases
+
+The project includes a structured evaluation framework to validate the retention assistant end to end.
+
+## LLM-as-a-Judge
+
+The evaluation flow combines:
+
+- deterministic automated metrics such as status match, tool selection accuracy, parameter extraction accuracy, response completeness, and hallucination detection
+- an independent LLM judge that scores response quality using an anchored rubric across factual correctness, tool-use appropriateness, actionability, and hallucination control
+
+Run the evaluation with:
+
+```powershell
+python scripts/run_evaluation.py
+```
+
+Enable the judge path with:
+
+```powershell
+python scripts/run_evaluation.py --use-judge
+```
+
+## Test Case Suite
+
+The evaluation suite contains 14 cases covering:
+
+- happy path and multi-step chaining
+- ambiguous input handling
+- out-of-scope requests
+- escalation triggers
+- model disagreement
+- adversarial prompt resistance
+- edge cases such as not-found and greeting-only inputs
+
+Each case defines:
+
+- the user input
+- expected status
+- expected tool order and key parameters
+- quality criteria for the response
+
+## Evaluation Outputs
+
+Each run writes results to:
+
+```
+data/evaluation_metrics/<timestamp>/
+```
+
+with:
+
+- aggregate_report.json
+- case_results.jsonl
+- leaderboard.md
+
+For the full walkthrough, see:
+
+- [docs/evaluation/LLM_as_Judge_Flow.md](docs/evaluation/LLM_as_Judge_Flow.md)
+- [docs/evaluation/Test_Cases_Handbook.md](docs/evaluation/Test_Cases_Handbook.md)
+
+---
+
 # 📊 MLflow
 
 The application supports both
