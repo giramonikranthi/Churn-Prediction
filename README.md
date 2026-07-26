@@ -480,6 +480,96 @@ Example
 
 ---
 
+# 🧪 Evaluation Framework and LLM-as-Judge
+
+An end-to-end evaluation pipeline is included under the `evaluation/` package.
+
+It provides:
+
+- A structured test suite with 14 labeled cases covering:
+        - single-tool happy path
+        - multi-step chaining
+        - ambiguous input
+        - out-of-scope request
+        - escalation triggers
+        - model disagreement
+        - adversarial and edge scenarios
+- Automated metrics:
+        - status match
+        - tool selection accuracy
+        - parameter extraction accuracy
+        - response completeness
+        - hallucination detection
+- Optional LLM-as-judge scoring with a separate model call and rubric-based anchors.
+
+LLM-as-judge dimensions (anchored):
+
+- factual_correctness
+- tool_use_appropriateness
+- actionability_for_representative
+- hallucination_control
+
+Anchor style used in judging:
+
+- low anchor: incorrect, unsafe, or unsupported behavior
+- mid anchor: partially correct with meaningful gaps
+- high anchor: correct, grounded, and actionable
+
+Run evaluation (automated metrics only):
+
+```powershell
+python scripts/run_evaluation.py
+```
+
+Run evaluation with LLM-as-judge enabled:
+
+```powershell
+python scripts/run_evaluation.py --use-judge
+```
+
+Run a smoke subset:
+
+```powershell
+python scripts/run_evaluation.py --max-cases 3
+```
+
+Output artifacts are written to a timestamped folder in:
+
+```
+data/evaluation_metrics/eval_run_<timestamp>/
+
+aggregate_report.json
+case_results.jsonl
+leaderboard.md
+```
+
+Note: `data/metrics_and_params/` remains reserved for Optuna and hyperparameter tuning artifacts.
+
+`aggregate_report.json` includes overall and per-category summaries.
+
+Quality gates are also included in `aggregate_report.json` under `quality_gates` with:
+
+- explicit hard checks (must pass)
+- explicit soft checks (target thresholds)
+- `pass` flag for CI-style gating
+
+`leaderboard.md` provides a compact markdown ranking of cases, category rollups, and lowest-scoring cases.
+
+Judge reliability guidance is documented and should be reviewed before production gating:
+
+- inter-rater consistency checks
+- prompt sensitivity checks
+- calibration against human labels
+- drift monitoring by category
+
+Reference docs for meeting walkthrough:
+
+- `docs/evaluation/LLM_as_Judge_Flow.md`
+- `docs/evaluation/Test_Cases_Handbook.md`
+- `docs/evaluation/Teams_Meeting_Talk_Track.md`
+
+---
+
 # 🧪 Development
 
 The repository also contains notebooks for
