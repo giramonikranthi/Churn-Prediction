@@ -6,6 +6,14 @@ Built with **Streamlit**, **Machine Learning**, **MLflow**, **SQLite**, and **Gr
 
 ---
 
+## 🆕 Recent Updates
+
+- The orchestrator now uses a **LangGraph-based workflow** for clearer state transitions and easier extension.
+- The runtime flow explicitly handles request evaluation, customer resolution, escalation, prediction/offer generation, and finalization.
+- Regression coverage was added to validate the orchestrator behavior end to end.
+
+---
+
 ## ✨ Features
 
 - 🔍 Customer profile lookup
@@ -18,13 +26,14 @@ Built with **Streamlit**, **Machine Learning**, **MLflow**, **SQLite**, and **Gr
 - 🗄 SQLite-backed session monitoring dashboard
 - 📊 MLflow model loading and version management
 - 🛡 Input and output guardrails
+- 🧠 LangGraph-powered orchestration for explicit workflow state handling
 - 💬 Streamlit chat interface
 
 ---
 
 # 🏗 Architecture
 
-The application follows a **deterministic orchestration model**.
+The application follows a **deterministic, stateful orchestration model** powered by **LangGraph**.
 
 Business decisions are **never delegated to the LLM**.
 
@@ -134,6 +143,7 @@ Streamlit Chat Interface
 |--------|------------|
 | Frontend | Streamlit |
 | Language | Python |
+| Workflow Orchestration | LangGraph |
 | Machine Learning | Scikit-Learn |
 | Model Registry | MLflow |
 | Database | SQLite |
@@ -656,6 +666,6 @@ This project is licensed under the MIT License.
 
 **Your Name**
 
-GitHub: https://github.com/yourusername
+GitHub: https://github.com/giramonikranthi
 
-LinkedIn: https://linkedin.com/in/yourprofile
+LinkedIn: https://www.linkedin.com/in/kranthi-giramoni/

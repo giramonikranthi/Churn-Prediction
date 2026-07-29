@@ -16,3 +16,4 @@ ipykernel>=6.29.0
 pydantic>=2.0.0
 python-dotenv>=1.0.1
 groq>=0.31.0
+langgraph>=0.2.0
